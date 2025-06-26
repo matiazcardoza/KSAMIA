@@ -20,7 +20,7 @@ Route::get('proyectos/{id_proyecto?}/ver-lotes', \App\Livewire\Proyectos\VerLote
     ->middleware(['auth', 'verified'])
     ->name('proyectos.ver-lotes');
 
-Route::get('ventas/{id_tipo_venta?}', \App\Livewire\Ventas\Ventas::class)
+Route::get('ventas/{id_proyecto?}', \App\Livewire\Ventas\Ventas::class)
     ->middleware(['auth', 'verified'])
     ->name('ventas');
 

@@ -3,6 +3,8 @@
 namespace App\Livewire\Proyectos\VerLotes;
 
 use App\Models\Cliente;
+use App\Models\Lote;
+use App\Models\Venta;
 use Flux\Flux;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -22,15 +24,61 @@ class LoteSeparar extends Component
     }
 
     public function separar(){
+
+        $this->nomCliente = strtoupper($this->nomCliente);
+        $this->apeCliente = strtoupper($this->apeCliente);
+        $this->dirCliente = strtoupper($this->dirCliente);
+        
         $this->validate([
-            "dniSeparar"=>"required|digits:8",
-            "nomSeparar"=>"required",
-            "apeSeparar"=>"required",
-            "emailSeparar"=>"required",
-            "telVenta"=>"required",
-            "dirVenta"=>"required",
-            "fechaVenta"=>"required"
+            "dniCliente"=>"required|digits:8",
+            "nomCliente"=>"required",
+            "apeCliente"=>"required",
+            "emailCliente"=>"required",
+            "telCliente"=>"required",
+            "dirCliente"=>"required",
+            "fechaSeparar"=>"required",
+            "montoSeparar"=>"required|numeric|min:0",
         ]);
+
+        if ($this->id_cliente) {
+            $cliente = Cliente::find($this->id_cliente);
+            $cliente->update([
+                "nom_cliente" => $this->nomCliente,
+                "ape_cliente" => $this->apeCliente,
+                "email_cliente" => $this->emailCliente,
+                "tel_cliente" => $this->telCliente,
+                "dir_cliente" => $this->dirCliente
+            ]);
+        } else {
+            $cliente = Cliente::create([
+                "dni_cliente" => $this->dniCliente,
+                "nom_cliente" => $this->nomCliente,
+                "ape_cliente" => $this->apeCliente,
+                "email_cliente" => $this->emailCliente,
+                "tel_cliente" => $this->telCliente,
+                "dir_cliente" => $this->dirCliente,
+                "est_cliente" => 1
+            ]);
+            $this->id_cliente = $cliente->id_cliente;
+        }
+        
+        Venta::create([
+            "id_lote"=>$this->id_lote,
+            "id_cliente_venta"=>$this->id_cliente,
+            "fecha_venta"=>$this->fechaSeparar,
+            "mseparado_venta"=>$this->montoSeparar,
+            "est_venta"=>1,
+        ]);
+
+        $lote = Lote::find($this->id_lote);
+        if ($lote) {
+            $lote->est_lote = 3;
+            $lote->save();
+        }
+
+        Flux::modal("separar-lote")->close();
+        $this->resetForm();
+        $this->dispatch("reloadLotes");
     }
 
     public function buscarCliente()

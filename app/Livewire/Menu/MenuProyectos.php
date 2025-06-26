@@ -2,26 +2,27 @@
 
 namespace App\Livewire\Menu;
 
+use App\Models\Proyecto;
 use App\Models\Tipo_venta;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
-class MenuVentas extends Component
+class MenuProyectos extends Component
 {
-    public $menu_ventas;
+    public $menu_proyectos;
 
     public function mount(){
-        $this->menu_ventas=Tipo_venta::all();
+        $this->menu_proyectos=Proyecto::all();
     }
 
     #[On('reloadMenuVentas')]
     public function reloadMenu()
     {
-        $this->menu_ventas = Tipo_venta::all();  // Recargar los datos
+        $this->menu_proyectos = Proyecto::all();  // Recargar los datos
     }
 
     public function render()
     {
-        return view('livewire.menu.menu-ventas');
+        return view('livewire.menu.menu-proyectos');
     }
 }

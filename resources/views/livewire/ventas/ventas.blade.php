@@ -1,15 +1,22 @@
 <div>
-    @foreach ($tipo_venta as $dato)
+    @foreach ($proyecto as $dato)
         <div class="relative mb-6 w-full">
-            <flux:heading size="xl" level="1">{{ __('Ventas por ') . $dato->nom_tipo_venta }}</flux:heading>
-            <flux:subheading size="lg" class="mb-6">{{ __('Listado de ventas por ') . $dato->nom_tipo_venta }}</flux:subheading>
+            <flux:heading size="xl" level="1">{{ __('Ventas por ') . $dato->nom_proyecto }}</flux:heading>
+            <flux:subheading size="lg" class="mb-6">{{ __('Listado de ventas por ') . $dato->nom_proyecto }}</flux:subheading>
             <flux:separator variant="subtle" />
         </div>
     @endforeach
 
-    <flux:modal.trigger name="nuevo-proyecto">
+    <flux:modal.trigger name="nueva-venta">
         <flux:button>Nueva Venta</flux:button>
     </flux:modal.trigger>
+
+    <div class="flex gap-2 mb-4">
+        <flux:button size="sm"  >Todos</flux:button>
+        <flux:button size="sm"  >Por Escritura</flux:button>
+        <flux:button size="sm"  >Por Cuota</flux:button>
+        <flux:button size="sm"  >Separados</flux:button>
+    </div>
 
     <div class="overflow-x-auto">
         <table class="w-full text-sm text-left rtl:text-rigth text-gray-500 dark:text-gray-400">
@@ -31,10 +38,10 @@
                         <td class="px-6 py-2 text-gray-600 dark:text-gray-300">{{ $value->nom_manzana }}</td>
                         <td class="px-6 py-2 text-gray-600 dark:text-gray-300">{{ $value->nom_lote }}</td>
                         <td class="px-6 py-2 text-gray-600 dark:text-gray-300">
-                            @if ($value->est_venta == 1)
+                            @if ($value->est_lote == 2)
                                 <span class="text-blue-500">VENDIDA</span>
                             @else
-                                {{ $value->est_venta }}
+                                <span class="text-blue-500">SEPARADO</span>
                             @endif
                         </td>
                         <td class="px-6 py-2 text-gray-600 dark:text-gray-300">

@@ -4,5 +4,6 @@
         <flux:subheading size="lg" class="mb-6">{{ __('Listado de proyectos') }}</flux:subheading>
         <flux:separator variant="subtle" />
     </div>    
+    <livewire:dark-mode-toogle />
     <livewire:Proyectos.proyectos/>
 </x-layouts.app>

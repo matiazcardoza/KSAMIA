@@ -19,18 +19,15 @@ class LoteVender extends Component
     use WithFileUploads;
 
     public $id_lote;
-
     public $id_tipo_venta;
-
     public $id_cliente;
-
     public $tipo_venta=[], $asesor_venta=[];
-
     public $dniCliente, $nomCliente, $apeCliente, $emailCliente, $telCliente, $dirCliente, $fechaVenta, $precioVenta;
-
     public $tipoVenta=1, $asesorVenta, $cuotaVenta;
-
     public $pdfUrl, $proyectoId, $pdfModificado, $id_proyecto=null;
+    
+    // Nueva propiedad para almacenar las modificaciones del PDF
+    public $pdfModifications = [];
 
     public function cargarPDF($id_proyecto)
     {
@@ -41,10 +38,6 @@ class LoteVender extends Component
             $this->pdfUrl = Storage::url($proyecto->pdf_ruta_proyecto);
         }
     }
-
-
-
-
 
     public function mount(){
         $this->tipo_venta = Tipo_venta::all()->map(function($tipo) {
@@ -63,7 +56,6 @@ class LoteVender extends Component
 
     public function buscarCliente()
     {
-        // Verifica que el DNI tenga 8 dígitos
         if (strlen($this->dniCliente) == 8) {
             $cliente = Cliente::where('dni_cliente', $this->dniCliente)->first();
             if ($cliente) {
@@ -80,6 +72,7 @@ class LoteVender extends Component
             $this->resetCamposCliente();
         }
     }
+
     public function resetCamposCliente()
     {
         $this->nomCliente = '';
@@ -90,10 +83,17 @@ class LoteVender extends Component
         $this->id_cliente = null;
     }
 
+    // Método para recibir las modificaciones del PDF desde JavaScript
+    public function savePdfModifications($modifications)
+    {
+        $this->pdfModifications = $modifications;
+    }
+
     public function vender(){
         $this->nomCliente = strtoupper($this->nomCliente);
         $this->apeCliente = strtoupper($this->apeCliente);
         $this->dirCliente = strtoupper($this->dirCliente);
+        
         $this->validate([
             "dniCliente"=>"required|digits:8",
             "nomCliente"=>"required",
@@ -109,7 +109,6 @@ class LoteVender extends Component
         ]);
 
         if ($this->id_cliente) {
-            // Si ya existe el cliente, sólo actualiza la información si ha cambiado
             $cliente = Cliente::find($this->id_cliente);
             $cliente->update([
                 "nom_cliente" => $this->nomCliente,
@@ -119,7 +118,6 @@ class LoteVender extends Component
                 "dir_cliente" => $this->dirCliente
             ]);
         } else {
-            // Crear nuevo cliente
             $cliente = Cliente::create([
                 "dni_cliente" => $this->dniCliente,
                 "nom_cliente" => $this->nomCliente,
@@ -140,13 +138,20 @@ class LoteVender extends Component
             "fecha_venta"=>$this->fechaVenta,
             "cantidadcuota_venta"=>$this->cuotaVenta,
             "monto_venta"=>$this->precioVenta,
-            "est_venta"=>1
+            "est_venta"=>1,
+            // Guardar las modificaciones del PDF como JSON
+            "pdf_modifications" => json_encode($this->pdfModifications)
         ]);
 
         $lote = Lote::find($this->id_lote);
         if ($lote) {
             $lote->est_lote = 2;
             $lote->save();
+        }
+
+        // Guardar PDF modificado si hay cambios
+        if (!empty($this->pdfModifications)) {
+            $this->dispatch('generate-modified-pdf');
         }
 
         Flux::modal("vender-lote")->close();
@@ -164,6 +169,7 @@ class LoteVender extends Component
         $this->dirCliente="";
         $this->fechaVenta="";
         $this->precioVenta="";
+        $this->pdfModifications = [];
     }
 
     #[On("VenderLote")]
@@ -176,19 +182,41 @@ class LoteVender extends Component
 
     public function guardarPDFModificado($dataUrl)
     {
-        // Decodificar la data URL
         $encodedData = explode(',', $dataUrl)[1];
         $decodedData = base64_decode($encodedData);
         
-        // Guardar el nuevo PDF
         $nombreArchivo = 'planos/modificado_' . time() . '.pdf';
         Storage::put('public/' . $nombreArchivo, $decodedData);
         
-        // Actualizar la referencia en la base de datos
         $proyecto = Proyecto::find($this->proyectoId);
         if ($proyecto) {
             $proyecto->pdf_ruta_proyecto = 'public/' . $nombreArchivo;
             $proyecto->save();
+        }
+    }
+
+    public $cuotas = [];
+
+    public function updatedPrecioVenta(){
+        $this->calcularCuotas();
+    }
+
+    public function updatedCuotaVenta(){
+        $this->calcularCuotas();
+    }
+
+    public function calcularCuotas(){
+        $this->cuotas = [];
+        if($this->tipoVenta ==2 && $this->precioVenta && $this->cuotaVenta > 0){
+            $base = intdiv($this->precioVenta, $this->cuotaVenta);
+            $resto = $this->precioVenta - ($base * $this->cuotaVenta);
+            for ($i = 1; $i <= $this->cuotaVenta; $i++) {
+                if ($i == $this->cuotaVenta) {
+                    $this->cuotas[] = $base + $resto;
+                } else {
+                    $this->cuotas[] = $base;
+                }
+            }
         }
     }
 }

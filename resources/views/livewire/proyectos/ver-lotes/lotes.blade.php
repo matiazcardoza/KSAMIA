@@ -36,10 +36,21 @@
                                         Disponible
                                     @endif
                                 </td>
-                                <td class="px-2 text-gray-600 dark:text-gray-300">
-                                    <flux:button variant="danger" size="sm" wire:click="vender({{ $lote['id_lote'] }}, {{ $id_proyecto }})">Vender</flux:button>
-                                    <flux:button size="sm" wire:click="separar({{ $lote['id_lote'] }})">Separar</flux:button>
-                                </td>
+                                @if ($lote['estado'] == 1)
+                                    <td class="px-2 text-gray-600 dark:text-gray-300">
+                                        <flux:button variant="danger" size="sm" wire:click="vender({{ $lote['id_lote'] }}, {{ $id_proyecto }})">Vender</flux:button>
+                                        <flux:button size="sm" wire:click="separar({{ $lote['id_lote'] }})">Separar</flux:button>
+                                    </td>
+                                @else   
+                                    <td class="px-2 font-medium text-gray-900 dark:text-white flex items-center gap-1">
+                                        <flux:button variant="filled" size="sm" wire:click="vender({{ $lote['id_lote'] }}, {{ $id_proyecto }})">Editar</flux:button>
+                                        <flux:button size="sm" variant="ghost" title="Ver lote">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 0c0 5-4.03 9-9 9S3 17 3 12 7.03 3 12 3s9 4.03 9 9z" />
+                                            </svg>
+                                        </flux:button>
+                                    </td>
+                                @endif
                             </tr>
                         @endforeach
                     </tbody>

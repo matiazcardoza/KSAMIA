@@ -32,7 +32,7 @@
                             <x-icon name="chevron-right" class="h-4 w-4 ml-auto" />
                         </flux:button>                        
                             <flux:menu class="w-48">
-                            <livewire:Menu.menu-ventas>
+                            <livewire:Menu.menu-proyectos />
                         </flux:menu>
                     </flux:dropdown>
                     <!--<flux:navlist.item icon="shopping-cart" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Ventas') }}</flux:navlist.item>-->

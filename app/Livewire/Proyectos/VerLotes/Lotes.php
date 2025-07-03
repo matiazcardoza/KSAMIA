@@ -6,6 +6,7 @@ use App\Models\Lote;
 use App\Models\Manzana;
 use App\Models\Proyecto;
 use Flux\Flux;
+use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -19,6 +20,7 @@ class Lotes extends Component
     public function mount($id_proyecto=null){
         $this->reset('manzanas');
         $proyecto = Proyecto::find($id_proyecto);
+        Log::info("Cargando lotes del proyecto: $proyecto");
         $this->id_proyecto=$id_proyecto;
         $this->nombre=$proyecto->nom_proyecto;
         $this->ubicacion=$proyecto->ubi_proyecto;

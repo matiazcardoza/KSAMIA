@@ -8,7 +8,9 @@ use App\Models\Tipo_venta;
 use App\Models\User;
 use App\Models\Venta;
 use App\Models\Proyecto;
+use Exception;
 use Flux\Flux;
+use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -28,14 +30,37 @@ class LoteVender extends Component
     
     // Nueva propiedad para almacenar las modificaciones del PDF
     public $pdfModifications = [];
-
+    
     public function cargarPDF($id_proyecto)
     {
-        $this->proyectoId=$id_proyecto;
+        Log::info("Cargando PDF para proyecto: $id_proyecto");
+        $this->proyectoId = $id_proyecto;
         $proyecto = Proyecto::find($id_proyecto);
 
         if ($proyecto && $proyecto->pdf_ruta_proyecto) {
-            $this->pdfUrl = Storage::url($proyecto->pdf_ruta_proyecto);
+            $rutaCompleta = storage_path('app/public/' . $proyecto->pdf_ruta_proyecto);
+            
+            // Debug detallado
+            Log::info('Ruta en DB: ' . $proyecto->pdf_ruta_proyecto);
+            Log::info('Ruta completa del archivo: ' . $rutaCompleta);
+            Log::info('¿Archivo existe?: ' . (file_exists($rutaCompleta) ? 'SÍ' : 'NO'));
+            Log::info('¿Enlace simbólico existe?: ' . (is_link(public_path('storage')) ? 'SÍ' : 'NO'));
+            
+            if (Storage::disk('public')->exists($proyecto->pdf_ruta_proyecto)) {
+                $this->pdfUrl = Storage::url($proyecto->pdf_ruta_proyecto);
+                Log::info('PDF URL generada: ' . $this->pdfUrl);
+                
+                // Verificar accesibilidad HTTP
+                $fullUrl = url($this->pdfUrl);
+                Log::info('URL completa: ' . $fullUrl);
+                
+            } else {
+                Log::error('Archivo PDF no encontrado en storage/app/public/: ' . $proyecto->pdf_ruta_proyecto);
+                $this->pdfUrl = null;
+            }
+        } else {
+            Log::error('Proyecto no encontrado o sin PDF: ' . $id_proyecto);
+            $this->pdfUrl = null;
         }
     }
 

@@ -49,7 +49,7 @@
                         <td class="px-6 py-2 text-gray-600 dark:text-gray-300">{{ $proyecto->nom_proyecto }}</td>
                         <td class="px-6 py-2 text-gray-600 dark:text-gray-300">{{ $proyecto->ubi_proyecto }}</td>
                         <td class="px-6 py-2 text-gray-600 dark:text-gray-300">{{ $proyecto->descripcion_proyecto }}</td>
-                        <td class="px-6 py-2 text-gray-600 dark:text-gray-300">{{ $proyecto->presupuesto_proyecto }}</td>
+                        <td class="px-6 py-2 text-gray-600 dark:text-gray-300">{{ $proyecto->presupuesto_proyecto ?? $proyecto->presuDolar_proyecto }}</td>
                         <td class="px-6 py-2 text-gray-600 dark:text-gray-300">{{ $proyecto->fecha_proyecto }}</td>
                         <td class="px-6 py-2 text-gray-600 dark:text-gray-300">
                             <flux:button variant="primary" size="sm" href="{{ route('proyectos.ver-lotes', ['id_proyecto' => $proyecto->id_proyecto]) }}" :current="request()->routeIs('proyectos.ver-lotes')" wire:navigate>Ver Lotes</flux:button>

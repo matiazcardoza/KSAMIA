@@ -13,6 +13,7 @@ class Proyecto extends Model
         "ubi_proyecto",
         "descripcion_proyecto",
         "presupuesto_proyecto",
+        "presuDolar_proyecto",
         "fecha_proyecto",
         "pdf_ruta_proyecto",
         "est_proyecto"

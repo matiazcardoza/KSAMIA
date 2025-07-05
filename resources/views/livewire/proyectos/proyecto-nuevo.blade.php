@@ -1,5 +1,5 @@
 <div>
-    <flux:modal name="nuevo-proyecto" class="md:w-150">
+    <flux:modal name="nuevo-proyecto" class="max-w-3xl w-full">
         <div class="space-y-4">
             <div>
                 <flux:heading size="lg">Crear Nuevo Proyecto</flux:heading>
@@ -13,7 +13,54 @@
             
             <div style="display: flex; gap: 20px; width: 100%;">
                 <flux:textarea wire:model='descripcion' label="Descripcion" placeholder="Descripcion general del proyecto" />
-                <flux:input wire:model='presupuesto' type="number" label="Presupuesto de proyecto" placeholder="Presupuesto" />
+            </div>
+
+            <div style="display: flex; gap: 20px; width: 100%; align-items: end;">
+                <div>
+                    <label>
+                        <input type="checkbox" wire:model.live="usarDolar" />
+                        ¿Presupuesto en dólares?
+                    </label>
+                </div>
+                @if(!$usarDolar)
+                    <flux:input wire:model.live='presupuesto' type="number" label="Presupuesto de proyecto (S/)" placeholder="Presupuesto en soles" />
+                @else
+                    <flux:input wire:model.live='presuDolar' type="number" label="Presupuesto (US$)" placeholder="Presupuesto en dólares" step="0.01" />
+                @endif
+            </div>
+
+            @foreach($inversores as $key => $inversor)
+                <div class="space-y-2 p-4 border-2 border-yellow-400 bg-yellow-100 rounded-lg mb-3">
+                   <div class="flex justify-between items-center">
+                        <flux:heading >Inversor {{ $key + 1 }}</flux:heading>
+                        <flux:button variant="danger" wire:click="eliminarInversor({{ $key }})">
+                            Eliminar
+                        </flux:button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <flux:input size="sm" wire:model="inversores.{{ $key }}.nombreInversor" 
+                                   label="Nombre completo" placeholder="Nombre del inversor" />
+                        <flux:input size="sm" wire:model="inversores.{{ $key }}.emailInversor" 
+                                   label="Email" placeholder="correo@ejemplo.com" type="email" />
+                        <flux:input size="sm" wire:model="inversores.{{ $key }}.telInversor" 
+                                   label="Teléfono" placeholder="999-999-999" />
+                        <flux:input size="sm" wire:model.live="inversores.{{ $key }}.montoInversor" 
+                                   label="Monto de inversión" placeholder="10000.00" type="number" step="0.01" />
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <flux:input size="sm" wire:model="inversores.{{ $key }}.porcentajeInversor" 
+                                   label="Porcentaje (%)" placeholder="25.5" type="number" 
+                                     step="0.01" min="0" max="100" />
+                        <flux:input size="sm" wire:model="inversores.{{ $key }}.fechaInversor" 
+                                   label="Fecha de ingreso" type="date" />
+                    </div>
+                </div>
+            @endforeach
+
+            <div style="display: flex; gap: 20px; width: 100%;">
+                <flux:button size="sm" variant="filled" wire:click='agregarinversor'>Agregar inversor</flux:button>
             </div>
 
 
@@ -41,8 +88,14 @@
                 </div>
             @endforeach
 
-            <flux:input wire:model='fecha' label="Fecha" type="date" />
-            <flux:input wire:model='pdfPlano' type="file" label="Seleccione plano de proyecto" />
+            <div>
+                <flux:input wire:model='fecha' label="Fecha" type="date" />
+                <flux:input wire:model='pdfPlano' type="file" label="Seleccione plano de proyecto" />
+            </div>
+            
+            <div>
+                <flux:input wire:model="evidencias" type="file" label="Adjuntar evidencias" multiple />
+            </div>
 
             @if(session()->has('error'))
                 <div class="alert alert-danger">

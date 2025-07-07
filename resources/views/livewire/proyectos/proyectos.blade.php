@@ -5,25 +5,25 @@
 
     <livewire:Proyectos.proyecto-nuevo>
     <livewire:Proyectos.proyecto-editar>
-        
+
     <flux:modal name="eliminar-proyecto" class="min-w-[22rem]">
         <div class="space-y-6">
             <div>
                 <flux:heading size="lg"> Esta seguro de eliminar proyecto?</flux:heading>
-    
+
                 <flux:subheading>
                     <p>Estás a punto de eliminar este proyecto.</p>
                     <p>Esta acción no se puede revertir.</p>
                 </flux:subheading>
             </div>
-        
+
             <div class="flex gap-2">
                 <flux:spacer />
-        
+
                 <flux:modal.close>
                     <flux:button variant="ghost">Cancelar</flux:button>
                 </flux:modal.close>
-        
+
                 <flux:button type="submit" variant="danger" wire:click='destroy()'>Eliminar proyecto</flux:button>
             </div>
         </div>
@@ -56,11 +56,11 @@
                             <flux:button size="sm" wire:click='editar({{ $proyecto->id_proyecto }})'>Editar</flux:button>
                             <flux:button variant="danger" size="sm" wire:click='eliminar({{ $proyecto->id_proyecto }})'>Eliminar</flux:button>
 
-                            <flux:button variant="ghost" size="sm" wire:click='eliminar({{ $proyecto->id_proyecto }})'>descargar evidencias</flux:button>
+                            <flux:button variant="ghost" size="sm" wire:click='descargarEvidencias({{ $proyecto->id_proyecto }})'>Descargar evidencias</flux:button>
                         </td>
                     </tr>
                 @endforeach
-                
+
             </tbody>
         </table>
     </div>

@@ -5,8 +5,10 @@ namespace App\Livewire\Proyectos;
 use Livewire\Component;
 use App\Models\Proyecto;
 use Flux\Flux;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\On;
+use ZipArchive;
 
 class Proyectos extends Component
 {
@@ -52,5 +54,34 @@ class Proyectos extends Component
         $nombre = strtolower($nombre);
         $nombre = substr($nombre, 0, 50);
         return $nombre;
+    }
+
+    public function descargarEvidencias($id_proyecto)
+    {
+        $proyecto = Proyecto::find($id_proyecto);
+
+        $carpetaProyecto = $this->sanitizarNombreCarpeta($proyecto->nom_proyecto);
+        $carpetaEvidencias = $carpetaProyecto . '/evidencias';
+        $archivos = Storage::disk('public')->allFiles($carpetaEvidencias);
+        $nombreZip = $this->sanitizarNombreCarpeta($proyecto->nom_proyecto) . '_evidencias_' . date('Y-m-d_H-i-s') . '.zip';
+        $rutaZip = storage_path('app/temp/' . $nombreZip);
+        if (!file_exists(storage_path('app/temp'))) {
+            mkdir(storage_path('app/temp'), 0755, true);
+        }
+
+        $zip = new ZipArchive;
+
+        if ($zip->open($rutaZip, ZipArchive::CREATE) === TRUE) {
+            foreach ($archivos as $archivo) {
+                $rutaCompleta = storage_path('app/public/' . $archivo);
+                $nombreArchivo = basename($archivo);
+                $zip->addFile($rutaCompleta, $nombreArchivo);
+            }
+            $zip->close();
+            return Response::download($rutaZip, $nombreZip)->deleteFileAfterSend(true);
+        } else {
+            Flux::toast(variant: 'danger', text: 'Error al crear el archivo ZIP');
+            return;
+        }
     }
 }

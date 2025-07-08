@@ -2,6 +2,7 @@
 <div class="space-y-4">
     <livewire:Proyectos.ver-lotes.lote-separar>
     <livewire:Proyectos.ver-lotes.lote-vender>
+    <livewire:Proyectos.ver-lotes.lote-editar>
     <div>
         <flux:heading size="lg">Lotes del Proyecto - {{ $nombre }}</flux:heading>
         <flux:subheading>Ver los detalles de proyecto, {{ $descripcion }}</flux:subheading>
@@ -30,23 +31,29 @@
                                 <td class="px-2 text-gray-600 dark:text-gray-300">{{ $lote['areaLote'] }}</td>
                                 <td class="px-2 text-gray-600 dark:text-gray-300">{{ $lote['precioLote'] }}</td>
                                 <td class="px-2 text-gray-600 dark:text-gray-300">
-                                    @if ($lote['estado'] == 2)
+                                    @if ($lote['estadoVenta'] == 2)
                                         Vendido
                                     @else
                                         Disponible
                                     @endif
                                 </td>
-                                @if ($lote['estado'] == 1)
+                                @if ($lote['estadoVenta'] == 1 || $lote['estadoVenta'] == null)
                                     <td class="px-2 text-gray-600 dark:text-gray-300">
                                         <flux:button variant="danger" size="sm" wire:click="vender({{ $lote['id_lote'] }}, {{ $id_proyecto }})">Vender</flux:button>
                                         <flux:button size="sm" wire:click="separar({{ $lote['id_lote'] }})">Separar</flux:button>
                                     </td>
                                 @else   
                                     <td class="px-2 font-medium text-gray-900 dark:text-white flex items-center gap-1">
-                                        <flux:button variant="filled" size="sm" wire:click="vender({{ $lote['id_lote'] }}, {{ $id_proyecto }})">Editar</flux:button>
+                                        <flux:button variant="filled" size="sm" wire:click="editar({{ $lote['id_lote'] }}, {{ $id_proyecto }})">Editar</flux:button>
                                         <flux:button size="sm" variant="ghost" title="Ver lote">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 0c0 5-4.03 9-9 9S3 17 3 12 7.03 3 12 3s9 4.03 9 9z" />
+                                            </svg>
+                                        </flux:button>
+                                        <flux:button size="sm" variant="filled" title="Descargar documento de contrato" 
+                                                    onclick="window.open('{{ route('contrato.pdf', $lote['id_lote']) }}', '_blank')">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                             </svg>
                                         </flux:button>
                                     </td>

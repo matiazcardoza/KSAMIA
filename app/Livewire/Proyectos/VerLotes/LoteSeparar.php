@@ -67,14 +67,8 @@ class LoteSeparar extends Component
             "id_cliente_venta"=>$this->id_cliente,
             "fecha_venta"=>$this->fechaSeparar,
             "mseparado_venta"=>$this->montoSeparar,
-            "est_venta"=>1,
+            "est_venta"=>3
         ]);
-
-        $lote = Lote::find($this->id_lote);
-        if ($lote) {
-            $lote->est_lote = 3;
-            $lote->save();
-        }
 
         Flux::modal("separar-lote")->close();
         $this->resetForm();

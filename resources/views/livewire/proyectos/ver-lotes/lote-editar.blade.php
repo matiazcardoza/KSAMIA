@@ -52,11 +52,11 @@
     </style>
     @endonce
 
-    <flux:modal name="vender-lote" class="max-w-7xl w-full">
+    <flux:modal name="editar-lote" class="max-w-7xl w-full">
         <div class="space-y-5">
             <div class="space-y-4">
-                <flux:heading size="lg">Vender Lote con id - {{ $id_lote }}</flux:heading>
-                <flux:subheading>Ver detalles de lote, separar un lote</flux:subheading>
+                <flux:heading size="lg">Editar Lote con id - {{ $id_lote }}</flux:heading>
+                <flux:subheading>Ver detalles de lote, editar un lote</flux:subheading>
             </div>
             
             <!-- Datos personales y de contacto en una sola fila -->
@@ -69,7 +69,6 @@
                 <flux:input size="sm" label="Direción" style="text-transform: uppercase;" wire:model='dirCliente' class="flex-1 min-w-[180px]" />
                 <flux:input size="sm" label="Fecha de Venta" type="date" wire:model='fechaVenta' class="flex-1 min-w-[180px]" />
                 <flux:select size="sm" label="Asesor" wire:model='asesorVenta' class="flex-1 min-w-[180px]">
-                    <option>Seleccine Asesor</option>
                     @foreach($asesor_venta as $asesor)
                         <option value="{{ $asesor['id'] }}">{{ $asesor['label'] }}</option>
                     @endforeach
@@ -178,12 +177,11 @@
 
             <!-- Botones de acción -->
             <div class="flex gap-2 pt-4">
-                <flux:button size="sm" variant="primary" wire:click='vender'>Vender Lote</flux:button>
-                <flux:button size="sm" variant="ghost" onclick="Flux.modal('vender-lote').close()">Cancelar</flux:button>
+                <flux:button size="sm" variant="primary" wire:click='update'>Actualizar Lote</flux:button>
+                <flux:button size="sm" variant="ghost" onclick="Flux.modal('editar-lote').close()">Cancelar</flux:button>
             </div>
         </div>
     </flux:modal>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             window.PDFEditor = class {

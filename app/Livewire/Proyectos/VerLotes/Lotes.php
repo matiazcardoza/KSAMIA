@@ -13,6 +13,48 @@ use Livewire\Component;
 class Lotes extends Component
 {
     public $id_proyecto, $nombre, $ubicacion, $descripcion, $presupuesto, $fecha, $manzanas=[];
+
+    public function descargarContratoPDF($id_lote)
+    {
+        $lote = Lote::select('lote.*', 'manzana.nom_manzana', 'manzana.descr_manzana', 'proyecto.nom_proyecto', 'proyecto.ubi_proyecto', 'ventas.id_venta', 'clientes.nom_cliente', 'clientes.ape_cliente')
+            ->join('manzana', 'manzana.id_manzana', '=', 'lote.id_manzana')
+            ->join('proyecto', 'proyecto.id_proyecto', '=', 'manzana.id_proyecto')
+            ->leftJoin('ventas', 'ventas.id_lote', '=', 'lote.id_lote')
+            ->leftJoin('clientes', 'clientes.id_cliente', '=', 'ventas.id_cliente_venta')
+            ->where('lote.id_lote', '=', $id_lote)
+            ->first();
+
+        $datos = [
+            'proyecto' => [
+                'nombre' => $lote->nom_proyecto,
+                'ubicacion' => $lote->ubi_proyecto,
+                'descripcion' => $lote->descripcion_proyecto,
+            ],
+            'manzana' => [
+                'nombre' => $lote->nom_manzana,
+                'descripcion' => $lote->descr_manzana,
+            ],
+            'lote' => [
+                'numero' => $lote->nom_lote,
+                'area' => $lote->area_lote,
+                'precio' => $lote->precio_lote,
+            ],
+            'venta' => $lote->venta,
+            'cliente' => $lote->cliente ?? (object)[
+                'nombre' => 'N/A',
+                'documento' => 'N/A',
+                'telefono' => 'N/A',
+                'email' => 'N/A'
+            ],
+        ];
+
+        $pdf = app('dompdf.wrapper');
+        $pdf->loadView('pdf.contrato-lote', $datos);
+        $pdf->setPaper('A4', 'portrait');
+        
+        return $pdf->stream('contrato_lote_' . $lote->nom_lote . '.pdf');
+    }
+
     public function render()
     {
         return view('livewire.proyectos.ver-lotes.lotes');
@@ -31,7 +73,16 @@ class Lotes extends Component
         $manzanas=Manzana::where('id_proyecto', $id_proyecto)->get();
 
         $this->manzanas = $manzanas->map(function ($manzana) {
-            $lotes = Lote::where('id_manzana', $manzana->id_manzana)->get();
+            $lotes = Lote::select(
+                    'lote.id_lote',
+                    'lote.nom_lote',
+                    'lote.area_lote',
+                    'lote.precio_lote',
+                    'lote.est_lote',
+                    'ventas.est_venta'
+                )->where('id_manzana', $manzana->id_manzana)
+                ->leftJoin('ventas', 'ventas.id_lote', '=', 'lote.id_lote')
+                ->get();
 
             return [
                 'id_manzana' => $manzana->id_manzana,
@@ -43,6 +94,7 @@ class Lotes extends Component
                         'numLote' => $lote->nom_lote,
                         'areaLote' => $lote->area_lote,
                         'precioLote' => $lote->precio_lote,
+                        'estadoVenta' => $lote->est_venta,
                         'estado' => $lote->est_lote
                     ];
                 })->toArray()
@@ -58,11 +110,24 @@ class Lotes extends Component
         $this->dispatch("VenderLote", $id_lote, $id_proyecto);
     }
 
+    public function editar($id_lote, $id_proyecto){
+        $this->dispatch("EditarLote", $id_lote, $id_proyecto);
+    }
+
     #[On("reloadLotes")]
     function realoadLotes(){
         $manzanas = Manzana::where('id_proyecto', $this->id_proyecto)->get();
         $this->manzanas = $manzanas->map(function ($manzana) {
-            $lotes = Lote::where('id_manzana', $manzana->id_manzana)->get();
+            $lotes = Lote::select(
+                    'lote.id_lote',
+                    'lote.nom_lote',
+                    'lote.area_lote',
+                    'lote.precio_lote',
+                    'lote.est_lote',
+                    'ventas.est_venta'
+                )->where('id_manzana', $manzana->id_manzana)
+                ->leftJoin('ventas', 'ventas.id_lote', '=', 'lote.id_lote')
+                ->get();
 
             return [
                 'id_manzana' => $manzana->id_manzana,
@@ -74,6 +139,7 @@ class Lotes extends Component
                         'numLote' => $lote->nom_lote,
                         'areaLote' => $lote->area_lote,
                         'precioLote' => $lote->precio_lote,
+                        'estadoVenta' => $lote->est_venta,
                         'estado' => $lote->est_lote
                     ];
                 })->toArray()

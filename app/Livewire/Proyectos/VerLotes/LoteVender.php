@@ -33,38 +33,13 @@ class LoteVender extends Component
     
     public function cargarPDF($id_proyecto)
     {
-        Log::info("Cargando PDF para proyecto: $id_proyecto");
         $this->proyectoId = $id_proyecto;
         $proyecto = Proyecto::find($id_proyecto);
-
-        if ($proyecto && $proyecto->pdf_ruta_proyecto) {
-            $rutaCompleta = storage_path('app/public/' . $proyecto->pdf_ruta_proyecto);
-            
-            // Debug detallado
-            Log::info('Ruta en DB: ' . $proyecto->pdf_ruta_proyecto);
-            Log::info('Ruta completa del archivo: ' . $rutaCompleta);
-            Log::info('¿Archivo existe?: ' . (file_exists($rutaCompleta) ? 'SÍ' : 'NO'));
-            Log::info('¿Enlace simbólico existe?: ' . (is_link(public_path('storage')) ? 'SÍ' : 'NO'));
-            
-            if (Storage::disk('public')->exists($proyecto->pdf_ruta_proyecto)) {
-                $this->pdfUrl = Storage::url($proyecto->pdf_ruta_proyecto);
-                Log::info('PDF URL generada: ' . $this->pdfUrl);
-                
-                // Verificar accesibilidad HTTP
-                $fullUrl = url($this->pdfUrl);
-                Log::info('URL completa: ' . $fullUrl);
-                
-            } else {
-                Log::error('Archivo PDF no encontrado en storage/app/public/: ' . $proyecto->pdf_ruta_proyecto);
-                $this->pdfUrl = null;
-            }
-        } else {
-            Log::error('Proyecto no encontrado o sin PDF: ' . $id_proyecto);
-            $this->pdfUrl = null;
-        }
+        $this->pdfUrl = Storage::url($proyecto->pdf_ruta_proyecto);
     }
 
     public function mount(){
+        $this->fechaVenta = date('Y-m-d');
         $this->tipo_venta = Tipo_venta::all()->map(function($tipo) {
             return ['id' => $tipo->id_tipo_venta, 'label' => $tipo->nom_tipo_venta];
         })->toArray();
@@ -96,6 +71,8 @@ class LoteVender extends Component
         } else {
             $this->resetCamposCliente();
         }
+
+        $this->dispatch('InitializePDF');
     }
 
     public function resetCamposCliente()
@@ -163,16 +140,8 @@ class LoteVender extends Component
             "fecha_venta"=>$this->fechaVenta,
             "cantidadcuota_venta"=>$this->cuotaVenta,
             "monto_venta"=>$this->precioVenta,
-            "est_venta"=>1,
-            // Guardar las modificaciones del PDF como JSON
-            "pdf_modifications" => json_encode($this->pdfModifications)
+            "est_venta"=>2,
         ]);
-
-        $lote = Lote::find($this->id_lote);
-        if ($lote) {
-            $lote->est_lote = 2;
-            $lote->save();
-        }
 
         // Guardar PDF modificado si hay cambios
         if (!empty($this->pdfModifications)) {
@@ -192,17 +161,24 @@ class LoteVender extends Component
         $this->emailCliente="";
         $this->telCliente="";
         $this->dirCliente="";
-        $this->fechaVenta="";
+        $this->fechaVenta=date('Y-m-d');
         $this->precioVenta="";
         $this->pdfModifications = [];
     }
 
     #[On("VenderLote")]
     public function VenderLote($id_lote, $id_proyecto){
-        $this->id_lote=$id_lote;
+        $this->id_lote = $id_lote;
+        $this->id_proyecto = $id_proyecto;
         $this->resetForm();
+        
+        // Cargar PDF ANTES de abrir el modal
         $this->cargarPDF($id_proyecto);
+        
+        // Abrir el modal
         Flux::modal("vender-lote")->show();
+        
+        $this->dispatch('InitializePDF');
     }
 
     public function guardarPDFModificado($dataUrl)
@@ -243,5 +219,6 @@ class LoteVender extends Component
                 }
             }
         }
+        $this->dispatch('InitializePDF');
     }
 }

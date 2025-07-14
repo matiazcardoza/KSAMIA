@@ -16,7 +16,22 @@ class Lotes extends Component
 
     public function descargarContratoPDF($id_lote)
     {
-        $lote = Lote::select('lote.*', 'manzana.nom_manzana', 'manzana.descr_manzana', 'proyecto.nom_proyecto', 'proyecto.ubi_proyecto', 'ventas.id_venta', 'clientes.nom_cliente', 'clientes.ape_cliente')
+        $lote = Lote::select(
+                'lote.*',
+                'ventas.monto_venta',
+                'manzana.nom_manzana',
+                'manzana.descr_manzana',
+                'proyecto.nom_proyecto',
+                'proyecto.ubi_proyecto',
+                'proyecto.descripcion_proyecto',
+                'ventas.id_venta',
+                'clientes.nom_cliente',
+                'clientes.ape_cliente',
+                'clientes.dni_cliente',
+                'clientes.tel_cliente',
+                'clientes.email_cliente',
+                'clientes.dir_cliente'
+                )
             ->join('manzana', 'manzana.id_manzana', '=', 'lote.id_manzana')
             ->join('proyecto', 'proyecto.id_proyecto', '=', 'manzana.id_proyecto')
             ->leftJoin('ventas', 'ventas.id_lote', '=', 'lote.id_lote')
@@ -39,17 +54,24 @@ class Lotes extends Component
                 'area' => $lote->area_lote,
                 'precio' => $lote->precio_lote,
             ],
-            'venta' => $lote->venta,
-            'cliente' => $lote->cliente ?? (object)[
-                'nombre' => 'N/A',
-                'documento' => 'N/A',
-                'telefono' => 'N/A',
-                'email' => 'N/A'
+            'venta' => [
+                'monto_venta' => $lote->monto_venta,
+            ],
+            'cliente' => [
+                'nombre' => $lote->nom_cliente,
+                'apellido' => $lote->ape_cliente,
+                'dni' => $lote->dni_cliente,
+                'telefono' => $lote->tel_cliente,
+                'email' => $lote->email_cliente,
+                'direccion' => $lote->dir_cliente
             ],
         ];
 
+        //dd($datos);
+
         $pdf = app('dompdf.wrapper');
-        $pdf->loadView('pdf.contrato-lote', $datos);
+        //$pdf->loadView('pdf.contrato-lote', $datos);
+        $pdf->loadView('pdf.export', $datos);
         $pdf->setPaper('A4', 'portrait');
         
         return $pdf->stream('contrato_lote_' . $lote->nom_lote . '.pdf');

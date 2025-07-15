@@ -172,10 +172,8 @@ class LoteVender extends Component
         $this->id_proyecto = $id_proyecto;
         $this->resetForm();
         
-        // Cargar PDF ANTES de abrir el modal
         $this->cargarPDF($id_proyecto);
         
-        // Abrir el modal
         Flux::modal("vender-lote")->show();
         
         $this->dispatch('InitializePDF');

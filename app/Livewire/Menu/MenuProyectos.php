@@ -18,7 +18,7 @@ class MenuProyectos extends Component
     #[On('reloadMenuVentas')]
     public function reloadMenu()
     {
-        $this->menu_proyectos = Proyecto::all();  // Recargar los datos
+        $this->menu_proyectos = Proyecto::all();
     }
 
     public function render()

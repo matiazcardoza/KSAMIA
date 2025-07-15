@@ -33,6 +33,8 @@
                                 <td class="px-2 text-gray-600 dark:text-gray-300">
                                     @if ($lote['estadoVenta'] == 2)
                                         Vendido
+                                    @elseif($lote['estadoVenta'] == 3)
+                                        Separado
                                     @else
                                         Disponible
                                     @endif

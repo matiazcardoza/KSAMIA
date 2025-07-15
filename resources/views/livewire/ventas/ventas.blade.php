@@ -1,4 +1,27 @@
 <div>
+    <flux:modal name="eliminar-venta" class="min-w-[22rem]">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg"> Esta seguro de eliminar Venta?</flux:heading>
+
+                <flux:subheading>
+                    <p>Estás a punto de eliminar esta venta.</p>
+                    <p>Esta acción no se puede revertir, el estado de lote se reiniciara.</p>
+                </flux:subheading>
+            </div>
+
+            <div class="flex gap-2">
+                <flux:spacer />
+
+                <flux:modal.close>
+                    <flux:button variant="ghost">Cancelar</flux:button>
+                </flux:modal.close>
+
+                <flux:button type="submit" variant="danger" wire:click='destroy()'>Eliminar proyecto</flux:button>
+            </div>
+        </div>
+    </flux:modal>
+
     @foreach ($proyecto as $dato)
         <div class="relative mb-6 w-full">
             <flux:heading size="xl" level="1">{{ __('Ventas por ') . $dato->nom_proyecto }}</flux:heading>
@@ -7,15 +30,22 @@
         </div>
     @endforeach
 
-    <flux:modal.trigger name="nueva-venta">
-        <flux:button>Nueva Venta</flux:button>
-    </flux:modal.trigger>
-
     <div class="flex gap-2 mb-4">
-        <flux:button size="sm"  >Todos</flux:button>
-        <flux:button size="sm"  >Por Escritura</flux:button>
-        <flux:button size="sm"  >Por Cuota</flux:button>
-        <flux:button size="sm"  >Separados</flux:button>
+        <flux:button size="sm" wire:click="filtrarTodos" variant="{{ $filtro_activo == 'todos' ? 'primary' : 'outline' }}">
+            Todos
+        </flux:button>
+        
+        <flux:button size="sm" wire:click="filtrarPorEscritura" variant="{{ $filtro_activo == 'escritura' ? 'primary' : 'outline' }}">
+            Por Escritura
+        </flux:button>
+        
+        <flux:button size="sm" wire:click="filtrarPorCuota" variant="{{ $filtro_activo == 'cuota' ? 'primary' : 'outline' }}">
+            Por Cuota
+        </flux:button>
+        
+        <flux:button size="sm" wire:click="filtrarSeparados" variant="{{ $filtro_activo == 'separados' ? 'primary' : 'outline' }}">
+            Separados
+        </flux:button>
     </div>
 
     <div class="overflow-x-auto">
@@ -38,15 +68,15 @@
                         <td class="px-6 py-2 text-gray-600 dark:text-gray-300">{{ $value->nom_manzana }}</td>
                         <td class="px-6 py-2 text-gray-600 dark:text-gray-300">{{ $value->nom_lote }}</td>
                         <td class="px-6 py-2 text-gray-600 dark:text-gray-300">
-                            @if ($value->est_lote == 2)
+                            @if ($value->est_venta == 2)
                                 <span class="text-blue-500">VENDIDA</span>
                             @else
                                 <span class="text-blue-500">SEPARADO</span>
                             @endif
                         </td>
                         <td class="px-6 py-2 text-gray-600 dark:text-gray-300">
-                            <flux:button size="sm" wire:click='editar({{ $value->id_tipo_venta }})'>Editar</flux:button>
-                            <flux:button variant="danger" size="sm" wire:click='eliminar({{ $value->id_tipo_venta }})'>Eliminar</flux:button>
+                            <flux:button size="sm" wire:click='editar({{ $value->id_venta }})'>Editar</flux:button>
+                            <flux:button variant="danger" size="sm" wire:click='eliminar({{ $value->id_venta }})'>Eliminar</flux:button>
                         </td>
                     </tr>
                 @endforeach

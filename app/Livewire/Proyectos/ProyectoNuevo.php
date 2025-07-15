@@ -221,6 +221,7 @@ class ProyectoNuevo extends Component
             $this->resetForm();
             Flux::modal("nuevo-proyecto")->close();
             $this->dispatch("reloadProyectos");
+            $this->dispatch("reloadMenuVentas");
 
             session()->flash('message', 'Proyecto creado exitosamente');
 

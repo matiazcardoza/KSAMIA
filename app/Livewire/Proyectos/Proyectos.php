@@ -44,6 +44,7 @@ class Proyectos extends Component
         }
         Proyecto::find($this->id_proyecto)->delete();
         $this->reloadProyectos();
+        $this->dispatch("reloadMenuVentas");
         Flux::modal("eliminar-proyecto")->close();
     }
 

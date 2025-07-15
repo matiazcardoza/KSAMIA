@@ -18,7 +18,7 @@
                         <span>{{ __('Dashboard') }}</span>
                     </flux:button>
                     <!--<flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>-->
-                    
+
                     <flux:button variant="ghost" class="py-7 flex w-full justify-start items-center gap-4" :href="route('proyectos')" :current="request()->routeIs('proyectos')" wire:navigate>
                         <x-icon name="folder" class="h-7 w-7" />
                         <span>{{ __('Proyectos') }}</span>
@@ -30,23 +30,40 @@
                             <x-icon name="shopping-cart" class="h-7 w-7" />
                             <span>{{ __('Ventas') }}</span>
                             <x-icon name="chevron-right" class="h-4 w-4 ml-auto" />
-                        </flux:button>                        
+                        </flux:button>
                             <flux:menu class="w-48">
                             <livewire:Menu.menu-proyectos />
                         </flux:menu>
                     </flux:dropdown>
+
+                    <flux:navlist.group expandable class="grid">
+                        <template #heading>
+                            <span class="flex items-center gap-2">
+                                <x-icon name="shopping-cart" class="h-5 w-5" />
+                                {{ __('Ventasprueba') }}
+                            </span>
+                        </template>
+                        <flux:navlist.item :href="route('dashboard')" wire:navigate>
+                            {{ __('Por Escrito') }}
+                        </flux:navlist.item>
+                        <flux:navlist.item :href="route('dashboard')" wire:navigate>
+                            {{ __('Por Cuotas') }}
+                        </flux:navlist.item>
+                        <!-- Puedes agregar más ítems aquí -->
+                    </flux:navlist.group>
+
                     <!--<flux:navlist.item icon="shopping-cart" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Ventas') }}</flux:navlist.item>-->
 
                     <flux:button variant="ghost" class="py-7 flex w-full justify-start items-center gap-4" :href="route('separados')" :current="request()->routeIs('separados')" wire:navigate>
                         <x-icon name="clipboard" class="h-7 w-7" />
                         <span>{{ __('Separados') }}</span>
                     </flux:button>
-                    
+
                     <flux:button variant="ghost" class="py-7 flex w-full justify-start items-center gap-4" :href="route('usuarios')" :current="request()->routeIs('usuarios')" wire:navigate>
                         <x-icon name="user" class="h-7 w-7" />
                         <span>{{ __('Usuarios') }}</span>
                     </flux:button>
-                    
+
                     <!--<flux:navlist.item icon="user" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Usuarios') }}</flux:navlist.item>-->
                     <flux:dropdown variant="ghost" position="right" align="start" class="w-full" hover>
                         <flux:button variant="ghost" class="py-7 flex w-full justify-start items-center gap-4">
@@ -95,7 +112,7 @@
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Sistema de Administración')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
-                    
+
                     Menú desplegable para Proyectos
                     <div class="px-3 py-1">
                         <flux:dropdown position="right" align="start" class="w-full" hover>
@@ -103,8 +120,8 @@
                                 <x-icon name="folder" class="h-5 w-5" />
                                 <span>{{ __('Proyectos') }}</span>
                             </flux:button>
-                            
-                            
+
+
                         </flux:dropdown>
                         <flux:dropdown position="right" align="start" class="w-full" hover>
                             <flux:button variant="ghost" class="flex w-full justify-start items-center gap-2">
@@ -112,7 +129,7 @@
                                 <span>{{ __('Ventas') }}</span>
                                 <x-icon name="chevron-right" class="h-4 w-4 ml-auto" />
                             </flux:button>
-                            
+
                             <flux:menu class="w-48">
                                 <flux:menu.item :href="route('dashboard')" wire:navigate>{{ __('Por Escrito') }}</flux:menu.item>
                                 <flux:menu.item :href="route('dashboard')" wire:navigate>{{ __('Por Cuotas') }}</flux:menu.item>
@@ -124,14 +141,14 @@
                                 <span>{{ __('Usuarios') }}</span>
                                 <x-icon name="chevron-right" class="h-4 w-4 ml-auto" />
                             </flux:button>
-                            
+
                             <flux:menu class="w-48">
                                 <flux:menu.item :href="route('dashboard')" wire:navigate>{{ __('Asistente Administrativo') }}</flux:menu.item>
                                 <flux:menu.item :href="route('dashboard')" wire:navigate>{{ __('Asesor') }}</flux:menu.item>
                             </flux:menu>
                         </flux:dropdown>
                     </div>
-                    
+
                     <flux:navlist.item icon="shopping-cart" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Ventas') }}</flux:navlist.item>
                     <flux:navlist.item icon="user" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Usuarios') }}</flux:navlist.item>
                     <flux:navlist.item icon="wrench" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Mantenimiento') }}</flux:navlist.item>

@@ -18,13 +18,17 @@ class LoteSeparar extends Component
 
     public $fechaSeparar, $montoSeparar;
 
+    public function mount()
+    {
+        $this->fechaSeparar = date('Y-m-d');
+    }
+
     public function render()
     {
         return view('livewire.proyectos.ver-lotes.lote-separar');
     }
 
     public function separar(){
-
         $this->nomCliente = strtoupper($this->nomCliente);
         $this->apeCliente = strtoupper($this->apeCliente);
         $this->dirCliente = strtoupper($this->dirCliente);
@@ -65,7 +69,7 @@ class LoteSeparar extends Component
         Venta::create([
             "id_lote"=>$this->id_lote,
             "id_cliente_venta"=>$this->id_cliente,
-            "fecha_venta"=>$this->fechaSeparar,
+            "fecseparar_venta"=>$this->fechaSeparar,
             "mseparado_venta"=>$this->montoSeparar,
             "est_venta"=>3
         ]);
@@ -77,7 +81,6 @@ class LoteSeparar extends Component
 
     public function buscarCliente()
     {
-        // Verifica que el DNI tenga 8 dígitos
         if (strlen($this->dniCliente) == 8) {
 
             $cliente = Cliente::where('dni_cliente', $this->dniCliente)->first();
@@ -114,15 +117,13 @@ class LoteSeparar extends Component
         $this->emailCliente="";
         $this->telCliente="";
         $this->dirCliente="";
-        $this->fechaSeparar="";
+        $this->fechaSeparar=date('Y-m-d');
         $this->montoSeparar="";
     }
 
     #[On("SepararLote")]
     public function SepararLote($id_lote){
-
         $this->id_lote=$id_lote;
-        $this->resetForm();
         Flux::modal("separar-lote")->show();
     }
 }

@@ -128,6 +128,10 @@ class Lotes extends Component
         $this->dispatch("SepararLote", $id_lote);
     }
 
+    public function separarEditar($id_lote){
+        $this->dispatch("SepararEditarLote", $id_lote);
+    }
+
     public function vender($id_lote, $id_proyecto){
         $this->dispatch("VenderLote", $id_lote, $id_proyecto);
     }

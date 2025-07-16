@@ -3,6 +3,7 @@
     <livewire:Proyectos.ver-lotes.lote-separar>
     <livewire:Proyectos.ver-lotes.lote-vender>
     <livewire:Proyectos.ver-lotes.lote-editar>
+    <livewire:Proyectos.ver-lotes.lote-separar-editar>
     <div>
         <flux:heading size="lg">Lotes del Proyecto - {{ $nombre }}</flux:heading>
         <flux:subheading>Ver los detalles de proyecto, {{ $descripcion }}</flux:subheading>
@@ -44,9 +45,13 @@
                                         <flux:button variant="danger" size="sm" wire:click="vender({{ $lote['id_lote'] }}, {{ $id_proyecto }})">Vender</flux:button>
                                         <flux:button size="sm" wire:click="separar({{ $lote['id_lote'] }})">Separar</flux:button>
                                     </td>
-                                @else   
+                                @else
                                     <td class="px-2 font-medium text-gray-900 dark:text-white flex items-center gap-1">
-                                        <flux:button variant="filled" size="sm" wire:click="editar({{ $lote['id_lote'] }}, {{ $id_proyecto }})">Editar</flux:button>
+                                        @if ($lote['estadoVenta'] == 2)
+                                            <flux:button variant="filled" size="sm" wire:click="editar({{ $lote['id_lote'] }}, {{ $id_proyecto }})">Editar</flux:button>
+                                        @else
+                                            <flux:button variant="filled" size="sm" wire:click="separarEditar({{ $lote['id_lote'] }})">Editar</flux:button>
+                                        @endif
                                         <flux:button size="sm" variant="ghost" title="Ver lote">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 0c0 5-4.03 9-9 9S3 17 3 12 7.03 3 12 3s9 4.03 9 9z" />

@@ -22,6 +22,31 @@
         </div>
     </flux:modal>
 
+    <flux:modal name="ver-venta" class="sm:w-150">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg"> Estos son los detalles de la venta.</flux:heading>
+            </div>
+            <div>
+                <flux:subheading>Detalles de la venta</flux:subheading>
+                <p><strong>ID Venta:</strong> {{ $venta->id_venta ?? 'N/A' }}</p>
+                <p><strong>Proyecto:</strong> {{ $venta->nom_proyecto ?? 'N/A' }}</p>
+                <p><strong>Manzana:</strong> {{ $venta->nom_manzana ?? 'N/A' }}</p>
+                <p><strong>Lote:</strong> {{ $venta->nom_lote ?? 'N/A' }}</p>
+            </div>
+
+            <div class="flex gap-2">
+                <flux:spacer />
+                <flux:modal.close>
+                    <flux:button variant="ghost">Cerrar</flux:button>
+                </flux:modal.close>
+            </div>
+        </div>
+    </flux:modal>
+
+    <livewire:Proyectos.ver-lotes.lote-editar>
+    <livewire:Proyectos.ver-lotes.lote-separar-editar>
+
     @foreach ($proyecto as $dato)
         <div class="relative mb-6 w-full">
             <flux:heading size="xl" level="1">{{ __('Ventas por ') . $dato->nom_proyecto }}</flux:heading>
@@ -75,8 +100,15 @@
                             @endif
                         </td>
                         <td class="px-6 py-2 text-gray-600 dark:text-gray-300">
-                            <flux:button size="sm" wire:click='editar({{ $value->id_venta }})'>Editar</flux:button>
+                            @if ($value->est_venta == 2)
+                                <flux:button size="sm" wire:click='editar({{ $value->id_lote }}, {{ $value->id_proyecto }})'>Editar</flux:button>
+                            @else
+                                <flux:button size="sm" wire:click='separarEditar({{ $value->id_lote }})'>Editar</flux:button>
+                            @endif
                             <flux:button variant="danger" size="sm" wire:click='eliminar({{ $value->id_venta }})'>Eliminar</flux:button>
+                            <flux:button variant="ghost" size="sm" title="Ver lote" wire:click='verVenta({{ $value->id_venta }})'>
+                                <x-heroicon-s-eye class="w-6 h-6 text-gray-600" />
+                            </flux:button>
                         </td>
                     </tr>
                 @endforeach

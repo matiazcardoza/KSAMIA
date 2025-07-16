@@ -11,7 +11,7 @@ use Livewire\Component;
 class Ventas extends Component
 {
     public $proyecto, $id_proyecto;
-    public $ventas, $id_venta;
+    public $ventas, $id_venta, $venta;
     public $filtro_activo = 'todos';
 
     public function filtrarTodos()
@@ -54,7 +54,8 @@ class Ventas extends Component
             'lote.est_lote',
             'manzana.nom_manzana',
             'proyecto.nom_proyecto',
-            'proyecto.ubi_proyecto'
+            'proyecto.ubi_proyecto',
+            'proyecto.id_proyecto'
         ])
         ->leftJoin('lote', 'ventas.id_lote', '=', 'lote.id_lote')
         ->leftJoin('manzana', 'lote.id_manzana', '=', 'manzana.id_manzana')
@@ -84,6 +85,28 @@ class Ventas extends Component
         Flux::modal("eliminar-venta")->show();
     }
 
+    public function verVenta($id_venta)
+    {
+        $this->id_venta = $id_venta;
+        $this->venta = Venta::select([
+            'ventas.*',
+            'lote.nom_lote',
+            'lote.area_lote',
+            'lote.precio_lote',
+            'lote.est_lote',
+            'manzana.nom_manzana',
+            'proyecto.nom_proyecto',
+            'proyecto.ubi_proyecto'
+        ])
+        ->leftJoin('lote', 'ventas.id_lote', '=', 'lote.id_lote')
+        ->leftJoin('manzana', 'lote.id_manzana', '=',   'manzana.id_manzana')
+        ->leftJoin('proyecto', 'manzana.id_proyecto', '=', 'proyecto.id_proyecto')
+        ->where('ventas.id_venta', $this->id_venta)
+        ->first();
+        $this->cargarVentas();
+        Flux::modal("ver-venta")->show();
+    }
+
     public function destroy(){
         $venta = Venta::find($this->id_venta);
         if ($venta) {
@@ -97,6 +120,16 @@ class Ventas extends Component
         $this->cargarVentas();
         Flux::modal("eliminar-venta")->close();
         $this->dispatch("reloadMenuVentas");
+    }
+
+    public function editar($id_lote, $id_proyecto){
+        $this->cargarVentas();
+        $this->dispatch("EditarLote", $id_lote, $id_proyecto);
+    }
+
+    public function separarEditar($id_lote){
+        $this->cargarVentas();
+        $this->dispatch("SepararEditarLote", $id_lote);
     }
 
     public function render()
